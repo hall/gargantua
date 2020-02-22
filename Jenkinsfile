@@ -12,9 +12,10 @@ node() {
     gitlabCommitStatus {
       stage('Test'){
         build.composeBuild("sdk")
-        sh '''
-          docker run --rm -i hobbyfarm/gargantua-sdk:${GIT_COMMIT_SHORT_HASH:-dev} go test
-        '''
+        // Once tests written, enable this
+        // sh '''
+        //   docker run --rm -i hobbyfarm/gargantua-sdk:${GIT_COMMIT_SHORT_HASH:-dev} go test
+        // '''
       }
       stage('Build'){
         build.composeBuild("release")

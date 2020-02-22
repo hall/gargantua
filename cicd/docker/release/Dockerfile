@@ -1,7 +1,7 @@
 ARG GIT_COMMIT_SHORT_HASH
 FROM hobbyfarm/gargantua-sdk:${GIT_COMMIT_SHORT_HASH} AS sdk
 
-RUN RUN go install -v ./...
+RUN go install -v ./...
 
 
 FROM alpine:latest
