@@ -13,5 +13,5 @@ build:
     sdk: ./cicd/docker/sdk
     release: ./cicd/docker/release
   pullImages:
-    - golang:latest
+    - golang:1.13
     - alpine:latest
