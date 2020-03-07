@@ -1,0 +1,15 @@
+common:
+  images:
+  - hobbyfarm/gargantua
+  eventRegistryKeys:
+  - event: commit/develop
+    registryKey: public
+  - event: commit/master
+    registryKey: public
+build:
+  composeProfileMap:
+    sdk: ./cicd/docker/sdk
+    release: ./cicd/docker/release
+  pullImages:
+    - golang:1.13
+    - alpine:latest
