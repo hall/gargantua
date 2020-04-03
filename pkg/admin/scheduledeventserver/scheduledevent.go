@@ -5,6 +5,10 @@ import (
 	"encoding/base32"
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"strings"
+	"time"
+
 	"github.com/golang/glog"
 	"github.com/gorilla/mux"
 	hfv1 "github.com/hobbyfarm/gargantua/pkg/apis/hobbyfarm.io/v1"
@@ -13,9 +17,6 @@ import (
 	"github.com/hobbyfarm/gargantua/pkg/util"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/util/retry"
-	"net/http"
-	"strings"
-	"time"
 )
 
 type AdminScheduledEventServer struct {
@@ -187,7 +188,7 @@ func (a AdminScheduledEventServer) CreateFunc(w http.ResponseWriter, r *http.Req
 
 	err = json.Unmarshal([]byte(requiredVM), &requiredVMUnmarshaled)
 	if err != nil {
-		glog.Errorf("error while unmarshaling required VM's %v", err)
+		glog.Errorf("error while unmarshalling required VM's %v", err)
 		util.ReturnHTTPMessage(w, r, 500, "internalerror", "error parsing")
 		return
 	}
@@ -196,7 +197,7 @@ func (a AdminScheduledEventServer) CreateFunc(w http.ResponseWriter, r *http.Req
 	if scenariosRaw != "" {
 		err = json.Unmarshal([]byte(scenariosRaw), &scenarios)
 		if err != nil {
-			glog.Errorf("error while unmarshaling required VM's %v", err)
+			glog.Errorf("error while unmarshalling scenarios %v", err)
 			util.ReturnHTTPMessage(w, r, 500, "internalerror", "error parsing")
 			return
 		}
@@ -205,7 +206,7 @@ func (a AdminScheduledEventServer) CreateFunc(w http.ResponseWriter, r *http.Req
 	if coursesRaw != "" {
 		err = json.Unmarshal([]byte(coursesRaw), &courses)
 		if err != nil {
-			glog.Errorf("error while unmarshaling required VM's %v", err)
+			glog.Errorf("error while unmarshalling courses %v", err)
 			util.ReturnHTTPMessage(w, r, 500, "internalerror", "error parsing")
 			return
 		}
@@ -225,8 +226,15 @@ func (a AdminScheduledEventServer) CreateFunc(w http.ResponseWriter, r *http.Req
 	scheduledEvent.Spec.EndTime = endTime
 	scheduledEvent.Spec.RequiredVirtualMachines = requiredVMUnmarshaled
 	scheduledEvent.Spec.AccessCode = accessCode
-	scheduledEvent.Spec.Scenarios = scenarios
-	scheduledEvent.Spec.Courses = courses
+
+	if scenariosRaw != "" {
+		scheduledEvent.Spec.Scenarios = scenarios
+	}
+
+	if coursesRaw != "" {
+		scheduledEvent.Spec.Courses = courses
+	}
+
 	scheduledEvent.Status.Active = true
 	scheduledEvent.Status.Finished = false
 	scheduledEvent.Status.Ready = false
@@ -331,12 +339,24 @@ func (a AdminScheduledEventServer) UpdateFunc(w http.ResponseWriter, r *http.Req
 			//}
 		}
 
+		if coursesRaw != "" {
+			if !scheduledEvent.Status.Provisioned {
+				courses := []string{}
+				err = json.Unmarshal([]byte(coursesRaw), &courses)
+				if err != nil {
+					glog.Errorf("error while unmarshaling courses %v", err)
+					return fmt.Errorf("bad")
+				}
+				scheduledEvent.Spec.Courses = courses
+			}
+		}
+
 		if scenariosRaw != "" {
 			if !scheduledEvent.Status.Provisioned { // we can't change the scenarios after the scheduled event was provisioned
 				scenarios := []string{}
 				err = json.Unmarshal([]byte(scenariosRaw), &scenarios)
 				if err != nil {
-					glog.Errorf("error while unmarshaling required VM's %v", err)
+					glog.Errorf("error while unmarshaling scenarios %v", err)
 					return fmt.Errorf("bad")
 				}
 				scheduledEvent.Spec.Scenarios = scenarios
