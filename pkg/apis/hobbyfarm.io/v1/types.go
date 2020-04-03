@@ -347,6 +347,8 @@ type AccessCodeSpec struct {
 	VirtualMachineSets  []string `json:"vmsets"`
 	RestrictedBind      bool     `json:"restricted_bind"`
 	RestrictedBindValue string   `json:"restricted_bind_value"`
+	MaxUsers            int      `json:"max_users"`
+	AllowedDomains      []string `json:"allowed_domains"`
 }
 
 // +genclient

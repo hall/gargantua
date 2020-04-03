@@ -16,3 +16,7 @@ artifacts/testing
 
 # docker-compose enviornment variables
 /.env
+
+# ignore log output from local dev process
+garg
+garg-shell

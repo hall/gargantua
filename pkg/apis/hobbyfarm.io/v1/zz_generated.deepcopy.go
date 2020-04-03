@@ -102,6 +102,11 @@ func (in *AccessCodeSpec) DeepCopyInto(out *AccessCodeSpec) {
 		*out = make([]string, len(*in))
 		copy(*out, *in)
 	}
+	if in.AllowedDomains != nil {
+		in, out := &in.AllowedDomains, &out.AllowedDomains
+		*out = make([]string, len(*in))
+		copy(*out, *in)
+	}
 	return
 }
 
@@ -750,6 +755,11 @@ func (in *ScheduledEventSpec) DeepCopyInto(out *ScheduledEventSpec) {
 	}
 	if in.Scenarios != nil {
 		in, out := &in.Scenarios, &out.Scenarios
+		*out = make([]string, len(*in))
+		copy(*out, *in)
+	}
+	if in.Courses != nil {
+		in, out := &in.Courses, &out.Courses
 		*out = make([]string, len(*in))
 		copy(*out, *in)
 	}
