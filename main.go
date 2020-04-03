@@ -9,6 +9,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/hobbyfarm/gargantua/pkg/accesscode"
 	adminAccessCodeServer "github.com/hobbyfarm/gargantua/pkg/admin/accesscodeserver"
+	adminCourseServer "github.com/hobbyfarm/gargantua/pkg/admin/courseserver"
 	adminEnvironmentServer "github.com/hobbyfarm/gargantua/pkg/admin/environmentserver"
 	adminScenarioServer "github.com/hobbyfarm/gargantua/pkg/admin/scenarioserver"
 	adminScheduledEventServer "github.com/hobbyfarm/gargantua/pkg/admin/scheduledeventserver"
@@ -170,6 +171,11 @@ func main() {
 		glog.Fatal(err)
 	}
 
+	adminCourseServer, err := adminCourseServer.NewAdminCourseServer(authClient, hfClient)
+	if err != nil {
+		glog.Fatal(err)
+	}
+
 	adminSEServer, err := adminScheduledEventServer.NewAdminScheduledEventServer(authClient, hfClient)
 	if err != nil {
 		glog.Fatal(err)
@@ -199,6 +205,7 @@ func main() {
 		adminAcServer.SetupRoutes(r)
 		adminEnvServer.SetupRoutes(r)
 		adminScenServer.SetupRoutes(r)
+		adminCourseServer.SetupRoutes(r)
 		adminSEServer.SetupRoutes(r)
 		adminUServer.SetupRoutes(r)
 		adminVMTServer.SetupRoutes(r)
